@@ -1,39 +1,44 @@
-このチュートリアルでは，SDK付属のCollectionを例にして，PIAX上で動作するエージェントを作ります．
-
-Collectionは，LL-Net上のセンサ機能を持っているエージェントを検索し，その エージェントからデータ(気温データ)を集め，統計情報(平均気温)を作ります． ソースファイルはSDKのCollection/srcにあります．
-
-チュートリアルを通して，以下を学べるようになっています．
-
-エージェントの作り方
-移動しないエージェントと，ピア間を移動できるエージェントを作ります．
-LL-Net を使ったエージェントの検索方法
-エージェントを移動させる方法
-RPC 呼び出しの使い方
-作るエージェントは 4つで，WeatherAgent，CollectStatisticsAgent， MakeStatisticsAgent，MainAgentです．
-
-それぞれのエージェントの概要について説明します．
-
-WeatherAgent
-
-気象情報を収集したり，計測したりするエージェントです． ただし，このチュートリアルでは，予め用意しておいた気温データを使います．
-
-MakeStatisticsAgent
-
-ユーザが選択したピアに移動し，そのピアの周辺にあるWeatherAgentから気 温データを集め，平均値を計算します．
-
-CollectStatisticsAgent
-
-WeatherAgentを探し，MakeStatisticsAgentを生成して移動させ， MakeStatisticsAgentのメソッドを呼び出して気温の平均値を算出します．
-
-MainAgent
-
-PIAXではmain()関数が呼ばれません．そのため，main()関数の役割をする MainAgentクラスを作成し使います．
-
-WeatherAgentを作る
-
-以下の内容のWeatherAgent.javaというファイルを作ります．
+# PIAX Tutorial
+In this tutorial, we will create an agent that operates on PIAX by following  Collection example attached to the SDK.
 
 
+Collection searches for agents having the sensor function on LL-Net and collects data(temperature data) to create statistical information(average temperature). The soruce code is in the Collection/src in SDK.
+
+The following topics can be learned through this tutorial.
+
+- How to create agents:
+    - An agent that does not move and one that can mvoe between peers
+- How to search for agents using LL-Net
+- How to move agents
+- How to use RPC call
+
+The four different agents: WeatherAgent，CollectStatisticsAgent， MakeStatisticsAgent and MainAgent, will be created in this tutorial.
+
+We will provide a brief explanation of each agent.
+
+### WeatherAgent
+
+WeatherAgent is for collecting and mesureing weather information. In this tutorial, prepared temperature data are used.
+
+### MakeStatisticsAgent
+
+MakeStatisticsAgent is for moving to the peer selected by the user to caliculate the average value of temparature data from collected from the near WeatherAgent
+
+### CollectStatisticsAgent
+
+CollectStatitiscsAgent finds the WeatherAgent, generates and moves the MakeStatisticsAgent to the peer. Then it calls the method of the MakeStatisticsAgent, and caliculates the average value of the temperature.
+
+
+### MainAgent
+
+In PIAX, the `main()` function is never called. Therefore, we will create a `MainAgent` class which take on the role of `main()` function.
+
+
+## 1. WeatherAgent
+
+Create a file, `WeatherAgent.java` with following code.
+
+```
 package agents;
 
 import java.util.logging.Logger;
@@ -84,27 +89,29 @@ public class WeatherAgent extends Agent implements WeatherAgentIf {
         return id;
     }
 }
-これはWeatherAgentのクラス定義です． 以下ではクラス定義を説明します．
+```
+This is a class definition of `WeatherAgent`. The class definition is described below.
 
-PIAXのエージェントは，Agentクラスを継承して作ります．
+A PIAX agent is created by inheriting the `Agent` class.
 
-また，PIAXには，あるクラスについて外部から呼び出せるメソッドを明示的に示すためにインタフェースファイルを作成するという約束があります． インタフェースファイルWeatherAgentIf.javaは後述します．
-
-getWeatherCalleeId()メソッドはCollectStatisticsAgentがWeatherAgentを探すときに呼び出すメソッドで，自分のCalleeIdを返します． CalleeIdクラスは他のピア上にあるオブジェクトを参照するためのクラスで， Serializableを実装しています。
-
-このサンプルでは作成しませんが， エージェントのメソッドとしてユーザ独自のクラスを返すメソッドを作成する場合は， その独自クラスにSerializableを実装する必要があります．
-
-getTemperature()はMakeStatisticsAgentが呼び出すメソッドです．
-
-データは予め意しておいたものを使います． 予め用意しているデータはCollection/src/agents/PointInfo.javaにあります． 日本各地の緯度経度情報とある日の気温データです． 緯度経度から，地名を取得したり気温データをを取得したりするために使います．
-
-WeatherAgentの説明は以上で終わりです． 次に，WeatherAgentIf.javaを作ります．
-
-WeatherAgentが持っているメソッドはsetCity()， getCitry()，getTemperature()， および　getWeatherCalleeIdで， いずれも外部から呼び出されるメソッドです．
-
-以下の内容のWeatherAgentIf.javaというファイルを作ります．
+In addition, PIAX has a stipulation that an interface file is created in order to explicitly show methods that can be called externally for a certain class. The interface file `WeatherAgentIf.java` is described later.
 
 
+`getWeatherCalleeId()` method is called by `CollectStatisticsAgent` for searching for `WeatherAgent` and returns its own `CalleeId`. `CalleeID` class is for refering object in other peer and implements Serializable.
+
+We do not cover the own class definition but you need to implements Serializable in your own class when you create a method to return your own class as a mehtod in agent.
+
+`getTemperature()` is a method called by `MakeStatisticAgent`.
+
+The prepared data is used. The prepared data is in Collection/src/agents/PointInfo.java. This includes information on the latitude and longitude of various places in Japan and the temperature data on a certain day. These data will be used for acquiring a name of a place or the atmospheric temperature data based on their latitude and longitude.
+
+The exaplanation of `WeatherAgent` is onevr. We will create `WeatherAgentIF.java` next.
+
+WeatherAgent has `setCity()`, `getCity()`, `getTemperature()` and `getWeatherCalleeId()`. All of these methods are called from the exteranl.
+
+We will create `WeatherAgentIf.java` with following code.
+
+```
 package agents;
 
 import org.piax.agent.AgentIf;
@@ -125,18 +132,20 @@ public interface WeatherAgentIf extends AgentIf {
     public CalleeId getWeatherCalleeId();
 
 }
-エージェントのインタフェースは，AgentIfを継承して作ります．
+```
+The interface of the agent is created by inheriting the `AgentIf`
 
-ポイント
-
-PIAXエージェントはAgentクラスを継承する
-PIAXエージェントはAgentIfを継承したインタフェースを実装する
-エージェントのメソッドの戻り値はSerializableを実装する
-MakeStatisticsAgentを作る
-
-以下の内容のMakeStatisticsAgent.javaというファイルを作ります．
+### Points
+1. PIAX agents inherit an `Agent` class.
+2. PIAX agents implements an interface that is inherited from `AgentIf`.
+3. The return value of the method of the agent implements `Serializable`.
 
 
+## 2. MakeStatisticsAgent
+
+We will create `MakeStatisticsAgent.java` with following code.
+
+```
 package agents;
 
 import java.util.List;
@@ -201,7 +210,7 @@ public class MakeStatisticsAgent extends MobileAgent implements
     }
 
     /*
-     * This method is called by CollectStatisticsAgent. I wasn't needed any
+     * This method is called by CollectStatisticsAgent. When this instance isn't needed any
      * more.
      */
     public void bye() {
@@ -209,41 +218,52 @@ public class MakeStatisticsAgent extends MobileAgent implements
     }
 
 }
-MakeStatisticsAgentのクラス定義は以上です． 以下ではクラス定義を説明します．
+```
+That's all for the described of MakeStatisticsAgent．We will explain the class definition in the following part.
 
-WeatherAgentと異なる点は，継承するクラスがAgentクラスではなく， MobileAgentクラスであることです． MobileAgentクラスを継承したエージェントはピア間を移動できます． MobileAgentクラスはAgentクラスを継承しています．
+The diffrence of `MakeStatisticsAgent` compared with `WeatherAgent` is that inherited class is `MobileAgent` class not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
 
-メンバ変数collectorAid，init()メソッド，onArrival()メソッド
+### Member variable collectorAid，init() Method and onArrival() Method
 
-メンバ変数collectorCidはCollectStatisticsAgentのCalleeIdを保存しておくための変数です．init()メソッドで設定されます． CollectStatisticsAgentは，MakeStatisticsAgentを作ると，すぐにinit() を呼び出して，自分のCalleeIdを設定します．
+The member variable collectorAid is a varibale for saving the AgentId of the CollectStatisticsAgent. This can be set by the init() method. Upon the creation of a MakeStatisticsAgent, the CollectStatisticsAgent immediately calls init() and sets its own AgentId.
 
-collectorCidはMakeStatisticsAgentがCollectStatisticsAgentのメソッドを呼び出すときに使います． MakeStatisticsAgentは以下のように動作します． MakeStatisticsAgentはCollectStatisticsAgentのあるピアから指定されたピアに移動します． 移動が終了すると，onArrival()メソッドが自動的に実行されます． onArrival()はMobileAgentから継承したメソッドで， エージェントが目的ピアに到着したら自動的に呼び出されるメソッドです． onArrival()メソッドの中から， RPCで CollectStatisticsAgentのarrived()メソッドを呼び出します． RPCを行うには，getStub()を使ってRPC用のStubを作成します． Stubを作成するときに，collectorCidを使います．
+`collectorCid` is used when the `MakeStatisticsAgent` calls a method of the `CollectStatisticsAgent`. The `MakeStatisticsAgent` operates as follows. The `MakeStatisticsAgent` moves to the peer specified by the peer having the `CollectStatisticsAgent`. When the movement is completed, the `onArrival()` method is automatically executed. `onArrival()` is a method inherited from the MobileAgent and is the method automatically called when the agent arrives at the target peer. The `arrived` method of `CollectStatitiscsAgent` is called via RPC inside `onArrival()` method. When `Stub` is generated, `collectCid` is used.
 
-doMake()メソッド
-
-doMake()メソッドはCollectStatisticsAgentから呼び出されます． MakeStatisticsAgentがいるピアのLL-Net上の場所(Location)から半径 r度内にあるピアに対しディスカバリーコールを行います． ディスカバリーコールを行う場合は， getDCStub()を使ってディスカバリーコール用のStubを作成します．
-
-getDCStub()の定義は以下のとおりです．
+The arrived() method of the CollectStatisticsAgent is called from among the onArrival() methods by means of callOneway(). At this time, collectorAid is used.
 
 
+### doMake() Method
+
+The `doMake()` method is called from the CollectStatisticsAgent. The `discoveryCall()` is executed on peers within a radius r of the the location on the LL-Net where the peer having the MakeStatisticsAgent is. When you wan to tuse `discoveryCall()`, you should create Stub using ` getDCStub()` .
+
+
+The definition of `getDCStub()` is below.
+
+```
     public <S extends RPCIf> S getDCStub(String queryCond, Class<S> clz, RPCMode rcpMode);
-  
-queryCondによって使われるオーバーレイが決まります． LL-Net で検索するには，以下のような文字列を指定します．
+```
 
+The `queryCond` determines the overlay to be used. For a search on the LL-Net, the following strings are specified.
+
+```
     $location in rect(x, y, w, h)
     $location in circle(x, y, r)
-    ここで，x は経度，y は緯度，wは経度の幅，hは緯度の幅，rは経緯度の半径です．
-clzには，対象エージェントが実装しているインタフェースを指定します． rpcModeには，Onewayかどうかを指定します． Stub.method()のように対象エージェントのメソッドを呼び出します．
+    // x is longitude. y is latitude. w is the width of longitude. h is the width of latitude.
+    // r is radius of latitude and longitude
+```
 
-argsはメソッドの引数に合わせて指定します． getTemperature()メソッドには引数がないので指定しません．
+The interface the tageted agent implements is specified for `clz`. Wheather `Oneway` or not is specified for `rpcMode`. The method of target agent is called like `Stub.method()`.
 
-bye()メソッド
-
-bye()メソッドもCollectStatisticsAgentから呼び出されます． 不要になったMakeStatisticsAgentを破棄するために使います．
-
-MakeStatisticsAgentの説明はこれで終わりです． 以下ではMakeStatisticsAgentのインタフェースファイルを作ります． MakeStatisticsAgentが持っているメソッドはinit()，doMake()，bye()，getCalleeIdで， いずれも外部から呼び出されるメソッドです． 以下の内容のMakeStatisticsAgentIf.javaというファイルを作ります．
+`args` is specified in accordance with the argument of the method. The `getTemperature()` method does not have its argument, and ,therefore, it is not specified.
 
 
+### bye() Method
+
+The `bye()` method is also called from the `CollectStatisticsAgent`. This is used to cancel the `MakeStatisticsAgent` that has become unnecessary.
+
+That is all for the descriptions of the MakeStatisticsAgent. In the following part, we will create an interface for the `MakeStatisticsAgent`. The methods of the `MakeStatisticsAgent` are `init()`, `doMake()`, and `bye()`, which are all called externally. We will create `MakeStatisticsAgentIf.java` with following code.
+
+```
 package agents;
 
 import org.piax.agent.AgentIf;
@@ -263,15 +283,15 @@ public interface MakeStatisticsAgentIf extends AgentIf {
     @RemoteCallable
      public CalleeId getCalleeId();
 }
-ポイント
+```
+### Points
+- PIAX agents that moves between peers inherit a `MoblieAgent` class.
+- Create `Stub` specifing `CalleeId` for RPC calling.
+- Create `CollectStatisticsAgent`
 
-ピア間を移動する PIAXエージェントはMobileAgentクラスを継承する
-RCP呼び出しを行うには，CalleeIdを指定してStubを作成する
-CollectStatisticsAgentを作る
+The following code is part of `CollectStatisticsAgent.java`. Since `CollectStatisticsAgent.java` is long, please refer to the source file for the entirety. The omitted portion is denoted by "...".
 
-以下は，CollectStatisticsAgent.javaの一部です． CollectStatisticsAgent.javaは長いので，全体はソースファイルを参照してくださnnxsい．省略部分は "..." で示します．
-
-
+```
 package agents;
 
 import ...
@@ -279,7 +299,7 @@ import ...
 public class CollectStatisticsAgent extends Agent implements
         CollectStatisticsAgentIf {
 
-    /* 日本を内包するRANGE */
+    /* RANGE enclosing Japan */
     public static final double BASE_LAT = 23.0;
     public static final double BASE_LON = 122.0;
     public static final double RANGE_LAT = 24.0;
@@ -354,19 +374,19 @@ public class CollectStatisticsAgent extends Agent implements
             CalleeId wcId = calleeIdMap.get(city);
             ...
 
-            /* MakeStatisticsAgent 作成 */
+            /* Create MakeStatisticsAgent */
             AgentId aid = getHome().createAgent(MakeStatisticsAgent.class);
-            /* MakeStatistics onArrival 用に自身(CollectStatisticsAgen)のCalleeIdを取得 */
+            /* Get its own(CollectStatisticsAgent) CalleeId for MakeStatistics onArrival */
             CalleeId mcId = getHome().getCalleeId(aid);
-            /* MakeStatistics init を実行 */
+            /* Execute MakeStatistics init */
             getStub(MakeStatisticsAgentIf.class, mcId).init(
             /* my CalleeId for Arrived */
             getHome().getCalleeId(getId()));
-            /* WeatherAgent CalleeId から Endpoint(PeerId) の情報を取得 */
+            /* Get Endpoint(Peerid) from WeatherAgent CalleeId */
             PeerId pid = (PeerId) wcId.getPeerRef();
             ...
 
-            /* travelAgent で移動元と移動先が同じ場合例外が発生するが無視する。 */
+            /* Ignore the exception caused by the fact that the origin and ddestination of travel of travelAgent are same */
             if (!getHome().getPeerId().equals(pid)) {
                 /* Weather Agent の移動 */
                 getHome().travelAgent(aid, pid);
@@ -435,44 +455,47 @@ public class CollectStatisticsAgent extends Agent implements
     }
 
     ...
-                                                        
 
 }
-以下ではCollectStatisticsAgentのクラス定義を説明します．
+```
+We will expalin the class definition of `CollectStatisticsAgent` in following part.
 
-CollectStatitiscsAgentは移動しないので，MobileAgentクラスではなく， Agentクラスを継承します． インタフェースファイルCollectStatisticsIf.javaについては後述します．
+Since the `CollectStatitiscsAgent` does not move between peers, it inherits an `Agent` class instead of the `MobileAgent` class. The interface file, CollectStatisticsIf.java is described below.
 
-メンバ変数がいくつかありますが，変数の説明はメソッドの説明の中で行います．
+There are several member variables, and the variables are described in the descriptions of the methods.
 
-searchWeatherAgent()メソッド
+### searchWeatherAgent() Method
 
-LL-Net上のWeatherAgentを探し， メンバ変数calleeIdMapに登録するメソッドです． calleeIdMapに登録された情報は， doCollect()メソッドが使います．
+This is a method for finding a `WeatherAgent` on the LL-Net and registering it with the member variable `peerInfoMap`. The information registered with the `peerInfoMap` is used by the `doCollect()` method.
 
-LL-Net上で検索するためにgetDCStub()の第1引数を次のように指定しています．
+The first argument of discoveryCall() is specified as follows for searching on the LL-Net.
 
-
+```
 "$location in rect(122.0, 23.0, 27.0, 24.0)"
-ここで指定した数字は，およそ日本列島全体を囲む領域になっています．
+```
+These figures specified here are for the area that approximately cover the entire Japanese archipelago.
 
-arrived()メソッド
+### arrived() Method
 
-arrived()は，MakeStatisticsAgentの説明で出てきました． MakeStatisticsAgentが移動したことをCollectStatisticsAgentに通知するために呼び出すメソッドです． 複数のMakeStatisticsAgentから同時に呼び出される可能性があるので， synchronizedで囲んでいます．
-
-doCollect()メソッド
-
-引数のcollectPointsは統計情報を作る場所のリストです． collectPointsの数だけMakeStatisticsAgentを作り， init()メソッドを呼び出して自分のAgentIdを設定した後， travelAgent()でcollectPointsのピアまで移動させます．
-
-travelAgent()の引数はAgentIdとPeerIdです． PeerIdはsearchAgent() メソッドで収集したcalleeIdMapから得ます． その後，全部のMakeStatisticsAgentが目的のピアに到着するのを待ちます．
-
-全部のMakeStatisticsAgentが目的ピアに到着したら， RPCで doMake()メソッドを呼び出して， 統計情報を取得します． この呼び出しは，AgentPeerのsubmitにより別スレッドに送信されたタスクで行われます．
-
-これは，統計情報の作成に時間がかかると想定し， 複数のスレッドで各エージェントに同時に作業させることを目的としています． (これはサンプルなのですぐに戻ってきますが，実際にはセンサからの入力を待つかもしれません）
-
-その後，AgentPeerのawaitTermination()メソッドを呼び出して， doMake()の結果が揃うのを待ちます． ただし，すべての呼び出しが必ず結果を返す保証はないため， このサンプルでは最大300秒待つようにしています．
-
-CollectStatisticsAgentの説明は以上で終わりです． 以下でCollectStatisticsAgentのインタフェースファイルを作ります． CollectStatisticsAgentにはメソッドが 10個ありますが， 10個のうち外部から呼び出されるのは， doCollect()とarrived()とgetCalleeId()の 3個です． 以下の内容のCollectStatisticsAgentIf.javaというファイルを作ります．
+`arrived()` has already been described in the `MakeStatisticsAgent` description. This is a method to be called in order to notify the fact that the `MakeStatisticsAgent` has moved to the `CollectStatisticsAgent`. Since there is a possibility of being called simultaneously by a number of `MakeStatisticsAgent`, this is surrounded by synchronized.
 
 
+### doCollect() Method
+
+The `collectPoints` of the arguments consist of a list of locations where statistical information is provided. The same number of `MakeStatisticsAgent` as that of the `collectPoints` are created, and `init()` method is called so as to set its own `AgentId`. After that, they are moved to a peer of the `collectPoints` by the `travelAgent()` method.
+
+The arguments of the `travelAgent()` are the `AgentId` and the `PeerId`. The `PeerId` is gained from the `peerInfoMap` that has been collected by the `searchAgent()` method. After that, all the `MakeStatisticsAgent` are waited for until they reach the target peers.
+
+When all the `MakeStatisticsAgent` reach the target peers, the `doMake()` method is called via RPC to acquire statistical information. This call is executed by task which is sent to other thread by `submit` of `AgentPeer`.`
+
+This behavior aim to let each agent operate in multiple thread because we assumes that it takes time to create statical information.(Since this is sample program, you will get the return quick. However, the program might wait for input from sensors.)
+
+After that, `CollectStatisticsAgent` call the `awaitTermination` method of `AgentPeer` and wait for the all result of `doMake()` method. Note that there is no gurantee to return the result from all calls. It waits upto 300 seconds in this example.
+
+That is all for the descriptions of the `CollectStatisticsAgent`. In the following, we will create an interface file of the `CollectStatisticsAgent`. Though the `CollectStatisticsAgent` has ten methods, the three out of ten methods: `init()`, `arrived()`, and `doCollect()`,  are called externally. We will create a file ,`CollectStatisticsAgentIf.java`, with the following code.
+
+
+```
 package agents;
 
 import java.util.ArrayList;
@@ -497,19 +520,19 @@ public interface CollectStatisticsAgentIf extends AgentIf {
     public CalleeId getCalleeId();
 
 }
-ポイント
+```
 
-複数の RPC 呼び出しを並列実行するには AgentPeer の submit を使う
-RPC 呼び出しがすべて成功することを期待してはならない
-同時に呼び出される可能性のあるメソッドは排他制御を行う
-MainAgentを作る
+### Points
+- Use the `submit` of `AgentPeer` to execute multiple RPC call pararelly.
+- Not to expect all RPC call would be successful
+- Do exclusive control the method which may call simultaneously
 
-CollectStatisticsAgentとWeatherAgentを用意し， PIAXで実行するためにMainAgentクラスを作ります．
+## Main Agent
+We prepare CollectStatisticsAgent and the WeatherAgent and create a MainAgent class to execute them in the PIAX.
 
-以下は，MainAgent.javaの一部です． MainAgent.java全体は大きいので，詳細はソースファイルを参照してください． 省略部分は "..." で示します．
-
-
-... 
+The following is part of MainAgent.java. The entirety of MainAgent.java is large, and therefore, refer to the source file for details. The omitted portions are denoted by "...".
+```
+...
 
 public class MainAgent extends Agent implements MainAgentIf {
     ...
@@ -581,8 +604,8 @@ public class MainAgent extends Agent implements MainAgentIf {
             ...
         }
         ...
-      
-        /* ディスカバリーコール 範囲内の MainAgentを探す */
+
+        /* Discovery Call search for MainAgent within the ragne */
         String queryCond = "$location in rect("
                 + CollectStatisticsAgent.BASE_LON + ", "
                 + CollectStatisticsAgent.BASE_LAT + ", "
@@ -601,7 +624,7 @@ public class MainAgent extends Agent implements MainAgentIf {
         ArrayList<CalleeId> mainList = new ArrayList<CalleeId>(results);
         ..
 
-        /* WeatherAgent を生成する */
+        /* Generate WeatherAgent */
         ArrayList<CalleeId> wl = new ArrayList<CalleeId>();
         for (int i = 0; i < agentNum; i++) {
             MainAgentIf stub = getStub(MainAgentIf.class, mainList.get(i));
@@ -649,7 +672,7 @@ public class MainAgent extends Agent implements MainAgentIf {
     public void init(TestbedInfo ti) throws Exception {
         ...
         try {
-            // LLNETをプラグイン
+            // Plugin LLNET
             AgentPeer apeer = getAgentPeer();
             apeer.declareAttrib("$location", Location.class);
             apeer.bindOverlay("$location", "LLNET");
@@ -664,21 +687,27 @@ public class MainAgent extends Agent implements MainAgentIf {
             ...
     }
 }
-PIAXでは，*.jarファイルをloadすると，各ピアでMainAgentのインスタンスを作成します． メインの処理は，MainAgentのメソッドをcallすることで，キックすることができます． MainAgentは，必ずorg.piax.agent.Agentクラスを継承し，デフォルトパッケージに所属するようにします．
+```
 
-init()
+In the PIAX, when a *.jar file is loaded, an instance of the MainAgent is created at each peer. The main process can be kicked off by calling the method of the MainAgent. The MainAgent inevitably inherits the org.piax.agent.Agent class and belongs to the default package.
 
-MainAgentを作成すると，このメソッドが呼ばれます． まだピアがオンライン状態ではないことに注意してください． Collectionでは，ロケーションの設定を行なっています．
-preparation()
+### init()
+When the MainAgent is created, this method is called. It should be noted that the peer is not yet in an online state. In the Collection, the location is set to a agent.
 
-preparation()では，ピア毎に，WeatherAgentを 1つ作成します． そのため，現存しているMainAgentのインスタンスのCalleeIDを取得します． ピアごとのCalleeIdの取得には，getCalleeId()メソッドを使用します． 取得したCalleeIdを使用してcreateWeatherAgent()を呼びWeatherAgentを作成します．
-対象となるピアの検索
+### preparation()
 
-MainAgentのgetCalleeId()を呼ぶピアの検索には， ディスカバリーコールを使用します． そのため，init()の処理でローケンションを設定します．
-ロケーション設定時の注意点
+In the preparation(), one `WeatherAgent` is created for each peer. Therefore, the `CalleeID`, is acquired from the instance of the existing `MainAgent`. The `getCalleeId()` method is used for acquiring `CalleeId` for each peer.  The `createWeatherAgent()` is called by using the acquired `CalleeId` so as to create a `WeatherAgent`.
 
-ロケーションの設定にはLL-Netオーバーレイのロードが必要です． setLocation()やsetAttrib()でロケーション情報を設定するまえに， 以下のようにオーバレイをロードしてください． Collectionでは，init()で行っています．
+#### Search for taget peer
 
+The `discoveryCall` is used for searching for the peer which call the `getCalleeId` of `MainAgent`. In order to do this, location infromation should be set during the process of `init()`.
+
+#### Notes for Location configuration
+
+It is necessary to load the LL-Net overlay to set a location. Before the setting of the location information by means of `setLocation()` and `setAttrib()`, load the overlay as follows. In the `Collection`, this is done by `init()`.
+
+
+```
 public void init(TestbedInfo ti) throws Exception {
     ...
     AgentPeer apeer = getAgentPeer();
@@ -686,28 +715,36 @@ public void init(TestbedInfo ti) throws Exception {
     apeer.bindOverlay("$location", "LLNET");
     ...
 }
-cities()
+```
+### cities()
 
-CollectStatisticsAgent$searchWeatherAgent()を使用して都市名のリストを取得します．
-collection()
+`CollectStatisticsAgent$searchWeatherAgent()` is used to acquire a list of city names.
 
-引数で指定した．都市毎の統計情報を表示します．
-使ってみる
+### collection()
+Statistical information for each city specified by an argument is displayed.
 
-作ったサンプルを動かします．
 
-実行手順
+## Run the sample program
 
-「パッケージ操作」ページから，Collection.jarの[登録]，[起動]を行い， パッケージのステータスを[動作中]にする．
-「エージェント操作」ページの「メソッド呼出」タブを選択する．
-ノード，ピアを選択し，メソッドにpreparationを指定して， 「呼出実行」ボタンを押す．*1, *2
-preparationは各ピア上にWeatherAgentを1つ作成するので， 引数には現在割り当てられているピアの数以下の値を指定する．
-ノード，ピアを選択し，メソッドにcitiesを指定して， 「呼出実行」ボタンを押す．*2
-ノード，ピアを選択し，メソッドにcollection指定して， 「呼出実行」ボタンを押す． *2
-引数には，citiesの結果の都市名の番号をカンマ区切りにしコロンの後に緯度経度の距離を指定します．
-(例)
-citiesの結果
+We will run the sample program
 
+### Procedure for Execution
+
+1. [Add new package], and [Start] of the Collection.jar are carried out from the [Manage Package] screen so as to activate the Agent.
+2. Select [Method call] tab in [Manage Agent]
+3. Select Node and Peer from the [Method call] screen so as to call the preparation(). *1, *2
+    - Select the numbeer less than the number of assigned peer because the preparation creates one `WeatherAgent` in each peer.
+4. Select Node and Peer from the [Method call] screen so as to call the cities(). *2
+5. Select Node and Peer from the [Method call] screen so as to call the collection(). *2
+
+
+The value of Args of collection(), the numbers of the city names resulting from the cities() are separated by commas, and the distance in the latitude and the longitude is designated after colons.
+
+
+(example)
+The results of `cities()`
+
+```
 [1]sapporo
 [2]morioka
 [3]osaka
@@ -718,14 +755,19 @@ citiesの結果
 [8]tokyo
 [9]akita
 [10]sendai
-[1]sapporo [2]morioka [3]osaka [4]kyoto の半径1.0の中の統計情報の表示
-引数 : "1,2,3,4:1.0"
-出力結果
+```
+
+Display of statistical information within a radius 1.0 for  [1]sapporo [2]morioka [3]osaka [4]kyoto
+Argeumts : "1,2,3,4:1.0"
+Output
+
+```
 Radius is 1.0
 osaka and environs: 8.0
 sapporo and environs: -4.0
 morioka and environs: -1.0
 kyoto and environs: 8.0
+```
 
-*1 preparationは， パッケージの起動毎に一回だけ実行してください．
-*2 ノード，ピアはどれを選択しても同様の結果になります．
+*1 Execute preparation() only once whenever the jar file is loaded.
+*2 The same results can be gained when either Node or Peer is selected from the [Call Agent] screen.
