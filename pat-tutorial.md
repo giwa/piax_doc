@@ -388,7 +388,7 @@ public class CollectStatisticsAgent extends Agent implements
 
             /* Ignore the exception caused by the fact that the origin and ddestination of travel of travelAgent are same */
             if (!getHome().getPeerId().equals(pid)) {
-                /* Weather Agent の移動 */
+                /* Move Weather Agent */
                 getHome().travelAgent(aid, pid);
                 travelCount++;
             }
