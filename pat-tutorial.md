@@ -2,14 +2,14 @@
 In this tutorial, we will create an agent that operates on PIAX by following  Collection example attached to the SDK.
 
 
-Collection searches for agents having the sensor function on LL-Net and collects data(temperature data) to create statistical information(average temperature). The soruce code is in the Collection/src in SDK.
+Collection searches for an agent having the sensor function on LL-Net and collects data(temperature data) to create statistical information(average temperature). The source code is in the Collection/src in SDK.
 
 The following topics can be learned through this tutorial.
 
 - How to create agents:
-    - An agent that does not move and one that can mvoe between peers
+    - An agent that does not move and one that can move between peers
 - How to search for agents using LL-Net
-- How to move agents
+- How to move an agent
 - How to use RPC call
 
 The four different agents: WeatherAgent，CollectStatisticsAgent， MakeStatisticsAgent and MainAgent, will be created in this tutorial.
@@ -18,20 +18,20 @@ We will provide a brief explanation of each agent.
 
 ### WeatherAgent
 
-WeatherAgent is for collecting and mesureing weather information. In this tutorial, prepared temperature data are used.
+WeatherAgent is for collecting and measuring weather information. In this tutorial, prepared temperature data are used.
 
 ### MakeStatisticsAgent
 
-MakeStatisticsAgent is for moving to the peer selected by the user to caliculate the average value of temparature data from collected from the near WeatherAgent
+MakeStatisticsAgent is for moving to the peer selected by the user to caliculate the average value of temperature data from collected from the near WeatherAgent
 
 ### CollectStatisticsAgent
 
-CollectStatitiscsAgent finds the WeatherAgent, generates and moves the MakeStatisticsAgent to the peer. Then it calls the method of the MakeStatisticsAgent, and caliculates the average value of the temperature.
+`CollectStatitiscsAgent` finds the `WeatherAgent`, generates and moves the MakeStatisticsAgent to the peer. Then it calls the method of the MakeStatisticsAgent, and calculates the average value of the temperature.
 
 
 ### MainAgent
 
-In PIAX, the `main()` function is never called. Therefore, we will create a `MainAgent` class which take on the role of `main()` function.
+In PIAX, the `main()` function is never called. Therefore, we will create a `MainAgent` class that take on the role of `main()` function.
 
 
 ## 1. WeatherAgent
@@ -99,17 +99,17 @@ In addition, PIAX has a stipulation that an interface file is created in order t
 
 `getWeatherCalleeId()` method is called by `CollectStatisticsAgent` for searching for `WeatherAgent` and returns its own `CalleeId`. `CalleeID` class is for refering object in other peer and implements Serializable.
 
-We do not cover the own class definition but you need to implements Serializable in your own class when you create a method to return your own class as a mehtod in agent.
+We do not cover the own class definition, but you need to implements Serializable in your class when you create a method to return your class as a method in agent.
 
 `getTemperature()` is a method called by `MakeStatisticAgent`.
 
 The prepared data is used. The prepared data is in Collection/src/agents/PointInfo.java. This includes information on the latitude and longitude of various places in Japan and the temperature data on a certain day. These data will be used for acquiring a name of a place or the atmospheric temperature data based on their latitude and longitude.
 
-The exaplanation of `WeatherAgent` is onevr. We will create `WeatherAgentIF.java` next.
+The explanation of `WeatherAgent` is over. We will create `WeatherAgentIF.java` next.
 
 WeatherAgent has `setCity()`, `getCity()`, `getTemperature()` and `getWeatherCalleeId()`. All of these methods are called from the exteranl.
 
-We will create `WeatherAgentIf.java` with following code.
+We will create `WeatherAgentIf.java` with the following code.
 
 ```
 package agents;
@@ -133,11 +133,11 @@ public interface WeatherAgentIf extends AgentIf {
 
 }
 ```
-The interface of the agent is created by inheriting the `AgentIf`
+The interface of the agent is created by inheriting the `AgentIf.'
 
 ### Points
 1. PIAX agents inherit an `Agent` class.
-2. PIAX agents implements an interface that is inherited from `AgentIf`.
+2. PIAX agents implement an interface that is inherited from `AgentIf`.
 3. The return value of the method of the agent implements `Serializable`.
 
 
@@ -221,11 +221,11 @@ public class MakeStatisticsAgent extends MobileAgent implements
 ```
 That's all for the described of MakeStatisticsAgent．We will explain the class definition in the following part.
 
-The diffrence of `MakeStatisticsAgent` compared with `WeatherAgent` is that inherited class is `MobileAgent` class not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
+The difference of `MakeStatisticsAgent` compared with `WeatherAgent` is that inherited class is `MobileAgent` class not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
 
 ### Member variable collectorAid，init() Method and onArrival() Method
 
-The member variable collectorAid is a varibale for saving the AgentId of the CollectStatisticsAgent. This can be set by the init() method. Upon the creation of a MakeStatisticsAgent, the CollectStatisticsAgent immediately calls init() and sets its own AgentId.
+The member variable collectorAid is a variable for saving the AgentId of the CollectStatisticsAgent. This can be set by the init() method. Upon the creation of a MakeStatisticsAgent, the CollectStatisticsAgent immediately calls init() and sets its own AgentId.
 
 `collectorCid` is used when the `MakeStatisticsAgent` calls a method of the `CollectStatisticsAgent`. The `MakeStatisticsAgent` operates as follows. The `MakeStatisticsAgent` moves to the peer specified by the peer having the `CollectStatisticsAgent`. When the movement is completed, the `onArrival()` method is automatically executed. `onArrival()` is a method inherited from the MobileAgent and is the method automatically called when the agent arrives at the target peer. The `arrived` method of `CollectStatitiscsAgent` is called via RPC inside `onArrival()` method. When `Stub` is generated, `collectCid` is used.
 
@@ -234,7 +234,7 @@ The arrived() method of the CollectStatisticsAgent is called from among the onAr
 
 ### doMake() Method
 
-The `doMake()` method is called from the CollectStatisticsAgent. The `discoveryCall()` is executed on peers within a radius r of the the location on the LL-Net where the peer having the MakeStatisticsAgent is. When you wan to tuse `discoveryCall()`, you should create Stub using ` getDCStub()` .
+The `doMake()` method is called from the CollectStatisticsAgent. The `discoveryCall()` is executed on peers within a radius r of the location on the LL-Net where the peer having the MakeStatisticsAgent is. When you wan to tuse `discoveryCall()`, you should create Stub using ` getDCStub()` .
 
 
 The definition of `getDCStub()` is below.
@@ -252,9 +252,9 @@ The `queryCond` determines the overlay to be used. For a search on the LL-Net, t
     // r is radius of latitude and longitude
 ```
 
-The interface the tageted agent implements is specified for `clz`. Wheather `Oneway` or not is specified for `rpcMode`. The method of target agent is called like `Stub.method()`.
+The interface the target agent implements is specified for `clz`. Weather `Oneway` or not is specified for `rpcMode`. The method of target agent is called like `Stub.method()`.
 
-`args` is specified in accordance with the argument of the method. The `getTemperature()` method does not have its argument, and ,therefore, it is not specified.
+`args` is specified by the argument of the method. The `getTemperature()` method does not have its argument, and , therefore, it is not specified.
 
 
 ### bye() Method
@@ -286,7 +286,7 @@ public interface MakeStatisticsAgentIf extends AgentIf {
 ```
 ### Points
 - PIAX agents that moves between peers inherit a `MoblieAgent` class.
-- Create `Stub` specifing `CalleeId` for RPC calling.
+- Create `Stub` specifying `CalleeId` for RPC calling.
 - Create `CollectStatisticsAgent`
 
 The following code is part of `CollectStatisticsAgent.java`. Since `CollectStatisticsAgent.java` is long, please refer to the source file for the entirety. The omitted portion is denoted by "...".
@@ -458,7 +458,7 @@ public class CollectStatisticsAgent extends Agent implements
 
 }
 ```
-We will expalin the class definition of `CollectStatisticsAgent` in following part.
+We will explain the class definition of `CollectStatisticsAgent` in following part.
 
 Since the `CollectStatitiscsAgent` does not move between peers, it inherits an `Agent` class instead of the `MobileAgent` class. The interface file, CollectStatisticsIf.java is described below.
 
@@ -477,7 +477,7 @@ These figures specified here are for the area that approximately cover the entir
 
 ### arrived() Method
 
-`arrived()` has already been described in the `MakeStatisticsAgent` description. This is a method to be called in order to notify the fact that the `MakeStatisticsAgent` has moved to the `CollectStatisticsAgent`. Since there is a possibility of being called simultaneously by a number of `MakeStatisticsAgent`, this is surrounded by synchronized.
+`arrived()` has already been described in the `MakeStatisticsAgent` description. This is a method to be called to notify the fact that the `MakeStatisticsAgent` has moved to the `CollectStatisticsAgent`. Since there is a possibility of being called simultaneously by some `MakeStatisticsAgent`, this is surrounded by synchronized.
 
 
 ### doCollect() Method
@@ -488,9 +488,9 @@ The arguments of the `travelAgent()` are the `AgentId` and the `PeerId`. The `Pe
 
 When all the `MakeStatisticsAgent` reach the target peers, the `doMake()` method is called via RPC to acquire statistical information. This call is executed by task which is sent to other thread by `submit` of `AgentPeer`.`
 
-This behavior aim to let each agent operate in multiple thread because we assumes that it takes time to create statical information.(Since this is sample program, you will get the return quick. However, the program might wait for input from sensors.)
+This behavior aims to let each agent operate in multiple thread because we assume that it takes time to create statical information.(Since this is sample program, you will get the return quick. However, the program might wait for input from sensors.)
 
-After that, `CollectStatisticsAgent` call the `awaitTermination` method of `AgentPeer` and wait for the all result of `doMake()` method. Note that there is no gurantee to return the result from all calls. It waits upto 300 seconds in this example.
+After that, `CollectStatisticsAgent` call the `awaitTermination` method of `AgentPeer` and wait for the all result of `doMake()` method. Note that there is no guarantee to return the result from all calls. It waits up to 300 seconds in this example.
 
 That is all for the descriptions of the `CollectStatisticsAgent`. In the following, we will create an interface file of the `CollectStatisticsAgent`. Though the `CollectStatisticsAgent` has ten methods, the three out of ten methods: `init()`, `arrived()`, and `doCollect()`,  are called externally. We will create a file ,`CollectStatisticsAgentIf.java`, with the following code.
 
@@ -523,9 +523,9 @@ public interface CollectStatisticsAgentIf extends AgentIf {
 ```
 
 ### Points
-- Use the `submit` of `AgentPeer` to execute multiple RPC call pararelly.
+- Use the `submit` of `AgentPeer` to execute multiple RPC call parallelly.
 - Not to expect all RPC call would be successful
-- Do exclusive control the method which may call simultaneously
+- Do exclusive control the method that may call simultaneously
 
 ## Main Agent
 We prepare CollectStatisticsAgent and the WeatherAgent and create a MainAgent class to execute them in the PIAX.
@@ -698,13 +698,13 @@ When the MainAgent is created, this method is called. It should be noted that th
 
 In the preparation(), one `WeatherAgent` is created for each peer. Therefore, the `CalleeID`, is acquired from the instance of the existing `MainAgent`. The `getCalleeId()` method is used for acquiring `CalleeId` for each peer.  The `createWeatherAgent()` is called by using the acquired `CalleeId` so as to create a `WeatherAgent`.
 
-#### Search for taget peer
+#### Search for target peer
 
-The `discoveryCall` is used for searching for the peer which call the `getCalleeId` of `MainAgent`. In order to do this, location infromation should be set during the process of `init()`.
+The `discoveryCall` is used for searching for the peer which call the `getCalleeId` of `MainAgent`. In order to do this, location information should be set during the process of `init()`.
 
 #### Notes for Location configuration
 
-It is necessary to load the LL-Net overlay to set a location. Before the setting of the location information by means of `setLocation()` and `setAttrib()`, load the overlay as follows. In the `Collection`, this is done by `init()`.
+It is necessary to load the LL-Net overlay to set a location. Before the setting of the location information using `setLocation()` and `setAttrib()`, load the overlay as follows. In the `Collection`, this is done by `init()`.
 
 
 ```
@@ -733,7 +733,7 @@ We will run the sample program
 1. [Add new package], and [Start] of the Collection.jar are carried out from the [Manage Package] screen so as to activate the Agent.
 2. Select [Method call] tab in [Manage Agent]
 3. Select Node and Peer from the [Method call] screen so as to call the preparation(). *1, *2
-    - Select the numbeer less than the number of assigned peer because the preparation creates one `WeatherAgent` in each peer.
+    - Select the number less than the number of assigned peer because the preparation creates one `WeatherAgent` in each peer.
 4. Select Node and Peer from the [Method call] screen so as to call the cities(). *2
 5. Select Node and Peer from the [Method call] screen so as to call the collection(). *2
 
