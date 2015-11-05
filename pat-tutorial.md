@@ -1,4 +1,4 @@
-# PIAX Tutorial
+# PIAX Tutorial for PIAX testbed
 In this tutorial, we will create an agent that operates on PIAX by following  Collection example attached to the SDK.
 
 
@@ -31,7 +31,7 @@ MakeStatisticsAgent is for moving to the peer selected by the user to caliculate
 
 ### MainAgent
 
-In PIAX, the `main()` function is never called. Therefore, we will create a `MainAgent` class that take on the role of `main()` function.
+In PIAX for PIAX testbed, the `main()` function is never called. Therefore, we will create a `MainAgent` class that take on the role of `main()` function.
 
 
 ## 1. WeatherAgent
