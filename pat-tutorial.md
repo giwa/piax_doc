@@ -94,16 +94,15 @@ This is a class definition of `WeatherAgent`. The class definition is described 
 
 A PIAX agent is created by inheriting the `Agent` class.
 
-In addition, PIAX has a stipulation that an interface file is created in order to explicitly show methods that can be called externally for a certain class. The interface file `WeatherAgentIf.java` is described later.
+In addition, to enable remote method invocations on PIAX, we need to create a Java interface that has methods which are used in remote method invocations. An example interface file `WeatherAgentIf.java` is described hereafter.
 
+`getWeatherCalleeId()` method is called by `CollectStatisticsAgent` for searching for `WeatherAgent` and returns its own `CalleeId`. `CalleeID` class is an identifier object of an agent on a peer to referred from remote peers. This class is implemented as Serializable in order to send its object data via network.
 
-`getWeatherCalleeId()` method is called by `CollectStatisticsAgent` for searching for `WeatherAgent` and returns its own `CalleeId`. `CalleeID` class is for refering object in other peer and implements Serializable.
-
-We do not cover the own class definition, but you need to implements Serializable in your class when you create a method to return your class as a method in agent.
+We do not cover the own class definition. Therefore you need to implement Serializable in your class when you create your own class and use it as a return value of a method in an agent.
 
 `getTemperature()` is a method called by `MakeStatisticAgent`.
 
-The prepared data is used. The prepared data is in Collection/src/agents/PointInfo.java. This includes information on the latitude and longitude of various places in Japan and the temperature data on a certain day. These data will be used for acquiring a name of a place or the atmospheric temperature data based on their latitude and longitude.
+As dummy data, predefined data is used. The predefined data is in Collection/src/agents/PointInfo.java. This includes information on the latitude and longitude of various places in Japan and the temperature data on a certain day. These data will be used for acquiring a name of a place or the atmospheric temperature data based on their latitude and longitude.
 
 The explanation of `WeatherAgent` is over. We will create `WeatherAgentIF.java` next.
 
@@ -221,7 +220,7 @@ public class MakeStatisticsAgent extends MobileAgent implements
 ```
 That's all for the described of MakeStatisticsAgent．We will explain the class definition in the following part.
 
-The difference of `MakeStatisticsAgent` compared with `WeatherAgent` is that inherited class is `MobileAgent` class not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
+The difference of `MakeStatisticsAgent` compared with `WeatherAgent` is that it is inherited class of `MobileAgent` class, not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
 
 ### Member variable collectorAid，init() Method and onArrival() Method
 
@@ -252,7 +251,7 @@ The `queryCond` determines the overlay to be used. For a search on the LL-Net, t
     // r is radius of latitude and longitude
 ```
 
-The interface the target agent implements is specified for `clz`. Weather `Oneway` or not is specified for `rpcMode`. The method of target agent is called like `Stub.method()`.
+The interface the target agent implements is specified for `clz`. Whether the method is `oneway` or not (wait for response etc.) is specified for `rpcMode`. The method of target agent is called like `Stub.method()`.
 
 `args` is specified by the argument of the method. The `getTemperature()` method does not have its argument, and , therefore, it is not specified.
 
@@ -477,7 +476,7 @@ These figures specified here are for the area that approximately cover the entir
 
 ### arrived() Method
 
-`arrived()` has already been described in the `MakeStatisticsAgent` description. This is a method to be called to notify the fact that the `MakeStatisticsAgent` has moved to the `CollectStatisticsAgent`. Since there is a possibility of being called simultaneously by some `MakeStatisticsAgent`, this is surrounded by synchronized.
+`arrived()` has already been described in the `MakeStatisticsAgent` description. This is a method to be called to notify the event that the `MakeStatisticsAgent` has moved to the `CollectStatisticsAgent`. Since there is a possibility of being called simultaneously by some `MakeStatisticsAgent`, this is surrounded by synchronized.
 
 
 ### doCollect() Method
@@ -689,7 +688,7 @@ public class MainAgent extends Agent implements MainAgentIf {
 }
 ```
 
-In the PIAX, when a *.jar file is loaded, an instance of the MainAgent is created at each peer. The main process can be kicked off by calling the method of the MainAgent. The MainAgent inevitably inherits the org.piax.agent.Agent class and belongs to the default package.
+In the PIAX testbed, when a *.jar file is loaded, an instance of the MainAgent is created at each peer. The main process can be kicked off by calling the method of the MainAgent. The MainAgent inevitably inherits the org.piax.agent.Agent class and belongs to the default package.
 
 ### init()
 When the MainAgent is created, this method is called. It should be noted that the peer is not yet in an online state. In the Collection, the location is set to a agent.
