@@ -12,7 +12,7 @@ The following topics can be learned through this tutorial.
 - How to move an agent
 - How to use RPC call
 
-The four different agents: WeatherAgent，CollectStatisticsAgent， MakeStatisticsAgent and MainAgent, will be created in this tutorial.
+The four different agents: WeatherAgent, CollectStatisticsAgent, MakeStatisticsAgent and MainAgent, will be created in this tutorial.
 
 We will provide a brief explanation of each agent.
 
@@ -218,17 +218,17 @@ public class MakeStatisticsAgent extends MobileAgent implements
 
 }
 ```
-That's all for the described of MakeStatisticsAgent．We will explain the class definition in the following part.
+That's all for the described of MakeStatisticsAgent. We will explain the class definition in the following part.
 
 The difference of `MakeStatisticsAgent` compared with `WeatherAgent` is that it is inherited class of `MobileAgent` class, not `Agent` class. The agent that inherits the `MobileAgent` class can move between peers. The `MobileAgent` class inherits `Agent` class.
 
-### Member variable collectorAid，init() Method and onArrival() Method
+### Member variable collectorCid, init() Method and onArrival() Method
 
-The member variable collectorAid is a variable for saving the AgentId of the CollectStatisticsAgent. This can be set by the init() method. Upon the creation of a MakeStatisticsAgent, the CollectStatisticsAgent immediately calls init() and sets its own AgentId.
+The member variable collectorCid is a variable for saving the AgentId of the CollectStatisticsAgent. This can be set by the init() method. Upon the creation of a MakeStatisticsAgent, the CollectStatisticsAgent immediately calls init() and sets its own AgentId.
 
-`collectorCid` is used when the `MakeStatisticsAgent` calls a method of the `CollectStatisticsAgent`. The `MakeStatisticsAgent` operates as follows. The `MakeStatisticsAgent` moves to the peer specified by the peer having the `CollectStatisticsAgent`. When the movement is completed, the `onArrival()` method is automatically executed. `onArrival()` is a method inherited from the MobileAgent and is the method automatically called when the agent arrives at the target peer. The `arrived` method of `CollectStatitiscsAgent` is called via RPC inside `onArrival()` method. When `Stub` is generated, `collectCid` is used.
+`collectorCid` is used when the `MakeStatisticsAgent` calls a method of the `CollectStatisticsAgent`. The `MakeStatisticsAgent` operates as follows. The `MakeStatisticsAgent` moves to the peer specified by the peer having the `CollectStatisticsAgent`. When the movement is completed, the `onArrival()` method is automatically executed. `onArrival()` is a method inherited from the MobileAgent and is the method automatically called when the agent arrives at the target peer. The `arrived` method of `CollectStatitiscsAgent` is called via RPC inside `onArrival()` method. When `Stub` is generated, `collectorCid` is used.
 
-The arrived() method of the CollectStatisticsAgent is called from among the onArrival() methods by means of callOneway(). At this time, collectorAid is used.
+The arrived() method of the CollectStatisticsAgent is called from among the onArrival() methods by means of callOneway(). At this time, collectorCid is used.
 
 
 ### doMake() Method
